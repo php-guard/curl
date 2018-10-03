@@ -1,0 +1,25 @@
+{
+    "name": "php-guard/curl",
+    "description": "Curl Wrapper with multi curl",
+    "type": "library",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Alexandre Le Borgne",
+            "email": "alexandre.leborgne.83@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "PhpGuard\\Curl\\": "src/",
+            "PhpGuard\\Curl\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "psr/http-message": "^1.0",
+        "guzzlehttp/guzzle": "^6.3",
+      "ext-curl": "*",
+        "ext-json": "*"
+    }
+}
