@@ -18,7 +18,7 @@ class CurlRequest
     /**
      * @var string
      */
-    protected $uri;
+    protected $url;
 
     /**
      * @var string
@@ -35,10 +35,10 @@ class CurlRequest
      */
     protected $headers = [];
 
-    public function __construct(Curl $curl, string $uri, string $method = 'GET', ?array $data = null, ?array $headers = [])
+    public function __construct(Curl $curl, string $url, string $method = 'GET', ?array $data = null, ?array $headers = [])
     {
         $this->curl = $curl;
-        $this->uri = $uri;
+        $this->url = $url;
         $this->method = $method;
         $this->data = $data;
         $this->headers = $headers;
@@ -47,17 +47,17 @@ class CurlRequest
     /**
      * @return string
      */
-    public function getUri(): string
+    public function getUrl(): string
     {
-        return $this->uri;
+        return $this->url;
     }
 
     /**
-     * @param string $uri
+     * @param string $url
      */
-    public function setUri(string $uri): void
+    public function setUrl(string $url): void
     {
-        $this->uri = $uri;
+        $this->url = $url;
     }
 
     /**
@@ -112,7 +112,11 @@ class CurlRequest
         $this->headers[$key] = $value;
     }
 
-    public function execute() {
-        $this->curl->execute($this);
+    /**
+     * @return CurlResponse
+     * @throws CurlError
+     */
+    public function execute(): CurlResponse {
+        return $this->curl->execute($this);
     }
 }
