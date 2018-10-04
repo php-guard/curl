@@ -1,9 +1,20 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Alexandre
- * Date: 03/10/2018
- * Time: 22:12
+ * php-guard/curl <https://github.com/php-guard/curl>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace PhpGuard\Curl;
@@ -28,11 +39,6 @@ class Curl
         $this->defaultHeaders = new Headers();
     }
 
-    public function setCurlOption(int $key, $value)
-    {
-        $this->curlOptions[$key] = $value;
-    }
-
     /**
      * If set to false, ignore error "SSL certificate problem: unable to get local issuer certificate"
      * Default to true
@@ -41,6 +47,11 @@ class Curl
     public function setSslVerifyPeer(bool $value)
     {
         $this->setCurlOption(CURLOPT_SSL_VERIFYPEER, $value);
+    }
+
+    public function setCurlOption(int $key, $value)
+    {
+        $this->curlOptions[$key] = $value;
     }
 
     /**
@@ -81,21 +92,19 @@ class Curl
         $url = $request->getUrl();
         $data = $request->getData();
 
-        if($request->getMethod() == 'POST') {
+        if ($request->getMethod() == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
         }
 
-        if(!empty($request->getData())) {
-            if(!isset($request->getHeaders()[Headers::CONTENT_TYPE])) {
-                if(is_string($request->getData())) {
+        if (!empty($request->getData())) {
+            if (!isset($request->getHeaders()[Headers::CONTENT_TYPE])) {
+                if (is_string($request->getData())) {
                     $request->getHeaders()[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_TEXT_PLAIN;
-                }
-                elseif (is_array($request->getData())) {
+                } elseif (is_array($request->getData())) {
                     $request->getHeaders()[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_FORM_URL_ENCODED;
                     $data = http_build_query($data, '', '&');
                 }
-            }
-            else if(preg_match(Headers::CONTENT_TYPE_PATTERN_JSON, $request->getHeaders()[Headers::CONTENT_TYPE])) {
+            } else if (preg_match(Headers::CONTENT_TYPE_PATTERN_JSON, $request->getHeaders()[Headers::CONTENT_TYPE])) {
                 $data = json_encode($data);
             }
 
