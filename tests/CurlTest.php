@@ -29,11 +29,42 @@ class CurlTest extends TestCase
     {
         try {
             $data = ['foo1' => 'bar1', 'foo2' => 'bar2'];
-            $response = $this->curl->get('https://postman-echo.com/get', $data)
-                ->execute()->json();
+            $response = $this->curl->get('https://postman-echo.com/get', $data)->execute();
 
+            $this->assertEquals(200, $response->statusCode());
+            $response = $response->json();
             $this->assertArrayHasKey('args', $response);
-            $this->assertSame($data, $response['args']);
+            $this->assertEquals($data, $response['args']);
+        } catch (CurlError $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    public function testPostRawText()
+    {
+        try {
+            $data = 'This is expected to be sent back as part of response body.';
+            $response = $this->curl->post('https://postman-echo.com/post', $data)->execute();
+
+            $this->assertEquals(200, $response->statusCode());
+            $response = $response->json();
+            $this->assertArrayHasKey('data', $response);
+            $this->assertEquals($data, $response['data']);
+        } catch (CurlError $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    public function testPostFormData()
+    {
+        try {
+            $data = ['foo1' => 'bar1', 'foo2' => 'bar2'];
+            $response = $this->curl->post('https://postman-echo.com/post', $data)->execute();
+
+            $this->assertEquals(200, $response->statusCode());
+            $response = $response->json();
+            $this->assertArrayHasKey('form', $response);
+            $this->assertEquals($data, $response['form']);
         } catch (CurlError $e) {
             $this->fail($e->getMessage());
         }

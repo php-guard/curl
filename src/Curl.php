@@ -8,6 +8,7 @@
 
 namespace PhpGuard\Curl;
 
+
 class Curl
 {
     const DEFAULT_CURL_OPTIONS = [
@@ -20,9 +21,11 @@ class Curl
     ];
 
     protected $curlOptions = [];
+    protected $defaultHeaders;
 
     public function __construct()
     {
+        $this->defaultHeaders = new Headers();
     }
 
     public function setCurlOption(int $key, $value)
@@ -40,9 +43,28 @@ class Curl
         $this->setCurlOption(CURLOPT_SSL_VERIFYPEER, $value);
     }
 
-    public function get(string $uri, ?array $data = null)
+    /**
+     * @param string $url
+     * @param null|array|string $query
+     * @param array $headers
+     * @return CurlRequest
+     */
+    public function get(string $url, $query = null, array $headers = [])
     {
-        return new CurlRequest($this, $uri, 'GET', $data);
+        if (!empty($query)) {
+            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
+        }
+
+        return new CurlRequest($this, $url, 'GET', null, $this->defaultHeaders->replace($headers));
+    }
+
+    public function post(string $url, $data = null, $query = null, array $headers = [])
+    {
+        if (!empty($query)) {
+            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
+        }
+
+        return new CurlRequest($this, $url, 'POST', $data, $this->defaultHeaders->replace($headers));
     }
 
     /**
@@ -59,8 +81,25 @@ class Curl
         $url = $request->getUrl();
         $data = $request->getData();
 
-        if (!empty($data) && in_array($request->getMethod(), ['GET', 'HEAD'])) {
-            $url .= '?' . (is_string($data) ? $data : http_build_query($data, '', '&'));
+        if($request->getMethod() == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+        }
+
+        if(!empty($request->getData())) {
+            if(!isset($request->getHeaders()[Headers::CONTENT_TYPE])) {
+                if(is_string($request->getData())) {
+                    $request->getHeaders()[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_TEXT_PLAIN;
+                }
+                elseif (is_array($request->getData())) {
+                    $request->getHeaders()[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_FORM_URL_ENCODED;
+                    $data = http_build_query($data, '', '&');
+                }
+            }
+            else if(preg_match(Headers::CONTENT_TYPE_PATTERN_JSON, $request->getHeaders()[Headers::CONTENT_TYPE])) {
+                $data = json_encode($data);
+            }
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
 
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -70,6 +109,8 @@ class Curl
         foreach ($curlOptions as $key => $value) {
             curl_setopt($ch, $key, $value);
         }
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getHeaders()->toHttp());
 
         // $output contains the output string
         $output = curl_exec($ch);
@@ -83,6 +124,7 @@ class Curl
             throw new CurlError($message, $code);
         }
 
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $rawHeaders = substr($output, 0, $headerSize);
         $raw = substr($output, $headerSize);
@@ -98,7 +140,7 @@ class Curl
         // close curl resource to free up system resources
         curl_close($ch);
 
-        return new CurlResponse($raw, $headers);
+        return new CurlResponse($statusCode, $raw, new Headers($headers));
     }
 
     /**
@@ -108,5 +150,13 @@ class Curl
     public function executeMulti(array $requests): array
     {
         return [new CurlResponse()];
+    }
+
+    /**
+     * @return Headers
+     */
+    public function getDefaultHeaders(): Headers
+    {
+        return $this->defaultHeaders;
     }
 }

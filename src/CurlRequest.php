@@ -26,22 +26,30 @@ class CurlRequest
     protected $method = 'GET';
 
     /**
-     * @var ?array
+     * @var mixed
      */
     protected $data;
 
     /**
-     * @var array
+     * @var Headers
      */
-    protected $headers = [];
+    protected $headers;
 
-    public function __construct(Curl $curl, string $url, string $method = 'GET', ?array $data = null, ?array $headers = [])
+    /**
+     * CurlRequest constructor.
+     * @param Curl $curl
+     * @param string $url
+     * @param string $method
+     * @param array|null $data
+     * @param array|Headers $headers
+     */
+    public function __construct(Curl $curl, string $url, string $method = 'GET', $data = null, $headers = [])
     {
         $this->curl = $curl;
         $this->url = $url;
         $this->method = $method;
         $this->data = $data;
-        $this->headers = $headers;
+        $this->headers = $headers instanceof Headers ? $headers : new Headers($headers);
     }
 
     /**
@@ -93,23 +101,15 @@ class CurlRequest
     }
 
     /**
-     * @return array
+     * @return Headers
      */
-    public function getHeaders(): array
+    public function getHeaders(): Headers
     {
         return $this->headers;
     }
 
-    /**
-     * @param array $headers
-     */
-    public function setHeaders(array $headers): void
-    {
-        $this->headers = $headers;
-    }
-
-    public function addHeader($key, $value) {
-        $this->headers[$key] = $value;
+    public function setHeaderContentType(string $contentType) {
+        $this->headers['Content-Type'] = $contentType;
     }
 
     /**

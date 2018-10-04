@@ -20,7 +20,8 @@
         "psr/http-message": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
       "ext-curl": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-mbstring": "*"
     },
     "scripts": {
         "test": "phpunit"

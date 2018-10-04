@@ -20,13 +20,16 @@ class CurlResponse
      * @var array
      */
     private $headers;
-    private $lowerHeaders;
+    /**
+     * @var int
+     */
+    private $statusCode;
 
-    public function __construct(string $rawResponse, array $headers)
+    public function __construct(int $statusCode, string $rawResponse, Headers $headers)
     {
+        $this->statusCode = $statusCode;
         $this->rawResponse = $rawResponse;
         $this->headers = $headers;
-        $this->lowerHeaders = array_change_key_case($headers, CASE_LOWER);
     }
 
     public function raw()
@@ -35,23 +38,32 @@ class CurlResponse
     }
 
     /**
-     * @return array
+     * @return Headers
      */
-    public function headers(): array
+    public function headers(): Headers
     {
         return $this->headers;
     }
 
-    public function getHeader(string $key) {
-        return $this->lowerHeaders[mb_strtolower($key)] ?? null;
-    }
-
     public function json()
     {
-        if(!preg_match(self::JSON_PATTERN, $this->getHeader('Content-Type'))) {
+        if(!preg_match(self::JSON_PATTERN, $this->headers['Content-Type'])) {
             return false;
         }
 
         return json_decode($this->rawResponse, true);
     }
+
+    /**
+     * @return int
+     */
+    public function statusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function isError() :bool {
+        return $this->statusCode >= 300;
+    }
+
 }
