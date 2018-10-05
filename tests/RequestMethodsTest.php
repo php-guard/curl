@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) 2018 by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ use PhpGuard\Curl\Curl;
 use PhpGuard\Curl\CurlError;
 use PHPUnit\Framework\TestCase;
 
-class CurlTest extends TestCase
+class RequestMethodsTest extends TestCase
 {
     private $curl;
 
@@ -76,6 +76,48 @@ class CurlTest extends TestCase
             $response = $response->json();
             $this->assertArrayHasKey('form', $response);
             $this->assertEquals($data, $response['form']);
+        } catch (CurlError $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    public function testPut() {
+        try {
+            $data = 'This is expected to be sent back as part of response body.';
+            $response = $this->curl->put('https://postman-echo.com/put', $data)->execute();
+
+            $this->assertEquals(200, $response->statusCode());
+            $response = $response->json();
+            $this->assertArrayHasKey('data', $response);
+            $this->assertEquals($data, $response['data']);
+        } catch (CurlError $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    public function testPatch() {
+        try {
+            $data = 'This is expected to be sent back as part of response body.';
+            $response = $this->curl->patch('https://postman-echo.com/patch', $data)->execute();
+
+            $this->assertEquals(200, $response->statusCode());
+            $response = $response->json();
+            $this->assertArrayHasKey('data', $response);
+            $this->assertEquals($data, $response['data']);
+        } catch (CurlError $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    public function testDelete() {
+        try {
+            $data = 'This is expected to be sent back as part of response body.';
+            $response = $this->curl->delete('https://postman-echo.com/delete', $data)->execute();
+
+            $this->assertEquals(200, $response->statusCode());
+            $response = $response->json();
+            $this->assertArrayHasKey('data', $response);
+            $this->assertEquals($data, $response['data']);
         } catch (CurlError $e) {
             $this->fail($e->getMessage());
         }
