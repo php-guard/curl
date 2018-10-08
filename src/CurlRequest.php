@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) 2018 by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,29 +23,29 @@ namespace PhpGuard\Curl;
 class CurlRequest
 {
     /**
-     * @var Curl
-     */
-    private $curl;
-
-    /**
      * @var string
      */
     protected $url;
-
     /**
      * @var string
      */
     protected $method = 'GET';
-
     /**
      * @var mixed
      */
     protected $data;
-
     /**
      * @var Headers
      */
     protected $headers;
+    /**
+     * @var Curl
+     */
+    private $curl;
+    /**
+     * @var CurlOptions
+     */
+    private $curlOptions;
 
     /**
      * CurlRequest constructor.
@@ -62,6 +62,7 @@ class CurlRequest
         $this->method = $method;
         $this->data = $data;
         $this->headers = $headers instanceof Headers ? $headers : new Headers($headers);
+        $this->curlOptions = new CurlOptions();
     }
 
     /**
@@ -120,8 +121,17 @@ class CurlRequest
         return $this->headers;
     }
 
-    public function setHeaderContentType(string $contentType) {
+    public function setHeaderContentType(string $contentType)
+    {
         $this->headers['Content-Type'] = $contentType;
+    }
+
+    /**
+     * @return CurlOptions
+     */
+    public function getCurlOptions(): CurlOptions
+    {
+        return $this->curlOptions;
     }
 
     /**
@@ -139,4 +149,5 @@ class CurlRequest
 
         return $response;
     }
+
 }

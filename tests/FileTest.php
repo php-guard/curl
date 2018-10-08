@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) 2018 by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ class FileTest extends TestCase
                 'file' => '@'.$file,
                 'name' => $name
             ])->execute();
-
+            var_dump($response->raw());
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
 

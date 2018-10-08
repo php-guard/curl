@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) 2018 by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ class Curl
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     ];
 
-    protected $curlOptions = [];
+    protected $defaultCurlOptions;
     protected $defaultHeaders;
     /**
      * @var null|string
@@ -46,6 +46,7 @@ class Curl
      * @var array
      */
     private $proxyIgnoredHosts;
+    private $requestModifierPipeline;
 
     public function __construct(?string $baseUrl = null, ?string $proxy = null, array $proxyIgnoredHosts = [])
     {
@@ -54,9 +55,16 @@ class Curl
         }
 
         $this->defaultHeaders = new Headers();
+        $this->defaultCurlOptions = new CurlOptions(self::DEFAULT_CURL_OPTIONS);
         $this->baseUrl = $baseUrl;
         $this->proxy = $proxy;
         $this->proxyIgnoredHosts = $proxyIgnoredHosts;
+        $this->requestModifierPipeline = new RequestModifierPipeline();
+
+        $this->requestModifierPipeline
+            ->pipe(new FileRequestModifier())
+            ->pipe(new MethodRequestModifier())
+            ->pipe(new PlainTextRequestModifier());
     }
 
     /**
@@ -66,16 +74,12 @@ class Curl
      */
     public function setSslVerifyPeer(bool $value)
     {
-        $this->setCurlOption(CURLOPT_SSL_VERIFYPEER, $value);
+        $this->defaultCurlOptions[CURLOPT_SSL_VERIFYPEER] = $value;
     }
 
-    public function setCurlOption(int $key, $value)
+    public function getDefaultCurlOptions(): CurlOptions
     {
-        $this->curlOptions[$key] = $value;
-    }
-
-    public function getCurlOption(int $key) {
-        return $this->curlOptions[$key] ?? null;
+        return $this->defaultCurlOptions;
     }
 
     /**
@@ -102,7 +106,7 @@ class Curl
             $url = $this->baseUrl . $url;
         }
 
-        return new CurlRequest($this, $url, 'GET', null, $this->defaultHeaders->replace($headers));
+        return new CurlRequest($this, $url, 'GET', null, $headers);
     }
 
     public function post(string $url, $data = null, $query = null, array $headers = [])
@@ -111,7 +115,7 @@ class Curl
             $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
         }
 
-        return new CurlRequest($this, $url, 'POST', $data, $this->defaultHeaders->replace($headers));
+        return new CurlRequest($this, $url, 'POST', $data, $headers);
     }
 
     public function put(string $url, $data = null, $query = null, array $headers = [])
@@ -120,7 +124,7 @@ class Curl
             $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
         }
 
-        return new CurlRequest($this, $url, 'PUT', $data, $this->defaultHeaders->replace($headers));
+        return new CurlRequest($this, $url, 'PUT', $data, $headers);
     }
 
     public function patch(string $url, $data = null, $query = null, array $headers = [])
@@ -129,7 +133,7 @@ class Curl
             $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
         }
 
-        return new CurlRequest($this, $url, 'PATCH', $data, $this->defaultHeaders->replace($headers));
+        return new CurlRequest($this, $url, 'PATCH', $data, $headers);
     }
 
     public function delete(string $url, $data = null, $query = null, array $headers = [])
@@ -138,7 +142,7 @@ class Curl
             $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
         }
 
-        return new CurlRequest($this, $url, 'DELETE', $data, $this->defaultHeaders->replace($headers));
+        return new CurlRequest($this, $url, 'DELETE', $data, $headers);
     }
 
     /**
@@ -147,80 +151,39 @@ class Curl
      */
     public function prepare(CurlRequest $request)
     {
+        $request = $this->requestModifierPipeline->process($request);
+
         // create curl resource
         $ch = curl_init();
 
-        // set url
-        $url = $request->getUrl();
-        $data = $request->getData();
+        var_dump($request->getData());
+        var_dump($request->getHeaders());
 
-        if ($this->proxy && !in_array(parse_url($request->getUrl(), PHP_URL_HOST), $this->proxyIgnoredHosts)) {
-            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-            curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
-        }
-
-        if ($request->getMethod() == 'POST') {
-            curl_setopt($ch, CURLOPT_POST, true);
-        }
-
-        if (!empty($data)) {
-            if (is_string($data)) {
-                if (!isset($request->getHeaders()[Headers::CONTENT_TYPE])) {
-                    $request->getHeaders()[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_TEXT_PLAIN;
-                }
-            }
-            else if (is_array($data)) {
-                if (preg_match(Headers::CONTENT_TYPE_PATTERN_JSON, $request->getHeaders()[Headers::CONTENT_TYPE])) {
-                    $data = json_encode($data);
-                }
-                else {
-                    $hasFile = false;
-                    foreach ($data as $key => $value) {
-                        if (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
-                            $hasFile = true;
-                            if (class_exists('CURLFile')) {
-                                $data[$key] = new \CURLFile(substr($value, 1));
-                            }
-                        }
-                        else if ($value instanceof \CURLFile) {
-                            $hasFile = true;
-                        }
-                    }
-
-                    if ($hasFile) {
-                        $request->getHeaders()[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_MULTIPART_FORM_DATA;
-                    }
-                    else {
-                        $request->getHeaders()[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_FORM_URL_ENCODED;
-                        $data = http_build_query($data, '', '&');
-                    }
-                }
-            }
-
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }
-
-        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_URL, $request->getUrl());
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->getMethod());
 
-        $curlOptions = array_replace(self::DEFAULT_CURL_OPTIONS, $this->curlOptions);
-        foreach ($curlOptions as $key => $value) {
+        $curlOptions = $this->defaultCurlOptions->replace($request->getCurlOptions());
+
+        foreach ($curlOptions->all() as $key => $value) {
             curl_setopt($ch, $key, $value);
         }
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getHeaders()->toHttp());
+        $headers = $this->defaultHeaders->replace($request->getHeaders());
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers->toHttp());
 
         return $ch;
     }
 
     /**
-     * @param CurlRequest|resource $request
+     * @param CurlRequest $request
      * @return CurlResponse
      * @throws CurlError
      */
-    public function execute($request): CurlResponse
+    public function execute(CurlRequest $request): CurlResponse
     {
-       $ch = $request instanceof CurlRequest ? $this->prepare($request) : $request;
+        $ch = $this->prepare($request);
 
         // $output contains the output string
         $output = curl_exec($ch);
@@ -260,6 +223,14 @@ class Curl
     public function executeMulti(array $requests): array
     {
         return [new CurlResponse()];
+    }
+
+    /**
+     * @return RequestModifierPipeline
+     */
+    public function getRequestModifierPipeline(): RequestModifierPipeline
+    {
+        return $this->requestModifierPipeline;
     }
 
 }

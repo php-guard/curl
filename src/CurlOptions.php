@@ -20,30 +20,16 @@
 namespace PhpGuard\Curl;
 
 
-class Headers implements \ArrayAccess
+class CurlOptions implements \ArrayAccess
 {
-    const CONTENT_TYPE_TEXT_PLAIN = 'text/plain';
-    const CONTENT_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
-    const CONTENT_TYPE_FORM_URL_ENCODED = 'application/x-www-form-urlencoded';
-    const CONTENT_TYPE_FORM_JSON = 'application/json';
-
-    const CONTENT_TYPE_PATTERN_JSON = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-
-    const CONTENT_TYPE = 'Content-Type';
-
     /**
      * @var array
      */
-    private $headers;
-    /**
-     * @var array
-     */
-    private $lowerHeaders;
+    private $options;
 
-    public function __construct(array $headers = [])
+    public function __construct(array $options = [])
     {
-        $this->headers = $headers;
-        $this->lowerHeaders = array_change_key_case($headers, CASE_LOWER);
+        $this->options = $options;
     }
 
     /**
@@ -60,7 +46,7 @@ class Headers implements \ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return isset($this->lowerHeaders[strtolower($offset)]);
+        return isset($this->options[$offset]);
     }
 
     /**
@@ -74,7 +60,7 @@ class Headers implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->lowerHeaders[strtolower($offset)] ?? null;
+        return $this->options[$offset] ?? null;
     }
 
     /**
@@ -91,8 +77,7 @@ class Headers implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->headers[$offset] = $value;
-        $this->lowerHeaders[strtolower($offset)] = $value;
+        $this->options[$offset] = $value;
     }
 
     /**
@@ -106,24 +91,16 @@ class Headers implements \ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        unset($this->headers[$offset]);
-        unset($this->lowerHeaders[strtolower($offset)]);
+        unset($this->options[$offset]);
+    }
+
+    public function replace(CurlOptions $options)
+    {
+        return new self(array_replace($this->options, $options->all()));
     }
 
     public function all()
     {
-        return $this->headers;
-    }
-
-    public function replace(Headers $headers)
-    {
-        return new self(array_replace($this->headers, $headers->all()));
-    }
-
-    public function toHttp(): array
-    {
-        return array_map(function ($k, $v) {
-            return $k . ':' . $v;
-        }, array_keys($this->headers), $this->headers);
+        return $this->options;
     }
 }
