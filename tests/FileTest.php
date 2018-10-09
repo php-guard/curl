@@ -46,7 +46,7 @@ class FileTest extends TestCase
                 'file' => '@'.$file,
                 'name' => $name
             ])->execute();
-            var_dump($response->raw());
+
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
 

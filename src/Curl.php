@@ -50,7 +50,7 @@ class Curl
 
     public function __construct(?string $baseUrl = null, ?string $proxy = null, array $proxyIgnoredHosts = [])
     {
-        if($baseUrl) {
+        if ($baseUrl) {
             $baseUrl = rtrim($baseUrl, '/');
         }
 
@@ -63,7 +63,6 @@ class Curl
 
         $this->requestModifierPipeline
             ->pipe(new FileRequestModifier())
-            ->pipe(new MethodRequestModifier())
             ->pipe(new PlainTextRequestModifier());
     }
 
@@ -102,7 +101,7 @@ class Curl
             $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
         }
 
-        if($this->baseUrl && is_null(parse_url($url, PHP_URL_HOST))) {
+        if ($this->baseUrl && is_null(parse_url($url, PHP_URL_HOST))) {
             $url = $this->baseUrl . $url;
         }
 
@@ -155,9 +154,6 @@ class Curl
 
         // create curl resource
         $ch = curl_init();
-
-        var_dump($request->getData());
-        var_dump($request->getHeaders());
 
         curl_setopt($ch, CURLOPT_URL, $request->getUrl());
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
