@@ -7,6 +7,18 @@ branches:
   only:
   - master
 
+
+install:
+# Install composer packages
+- travis_retry composer install --no-interaction --no-suggest
+
 before_script:
 - composer self-update
 - composer install --prefer-dist
+
+
+# You can delete the cache using travis-ci web interface
+cache:
+  directories:
+  - vendor
+  - $HOME/.cache/composer
