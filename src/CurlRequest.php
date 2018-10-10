@@ -53,16 +53,18 @@ class CurlRequest
      * @param string $url
      * @param string $method
      * @param array|null $data
-     * @param array|Headers $headers
+     * @param array $headers
+     * @param array $curlOptions
      */
-    public function __construct(Curl $curl, string $url, string $method = 'GET', $data = null, $headers = [])
+    public function __construct(Curl $curl, string $url, string $method = 'GET', $data = null, array $headers = [],
+                                array $curlOptions = [])
     {
         $this->curl = $curl;
         $this->url = $url;
         $this->method = $method;
         $this->data = $data;
-        $this->headers = $headers instanceof Headers ? $headers : new Headers($headers);
-        $this->curlOptions = new CurlOptions();
+        $this->headers = new Headers($headers);
+        $this->curlOptions = new CurlOptions($curlOptions);
     }
 
     /**

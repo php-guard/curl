@@ -39,12 +39,24 @@ class CurlResponse
      * @var int
      */
     private $statusCode;
+    /**
+     * @var array
+     */
+    private $info;
 
-    public function __construct(int $statusCode, string $rawResponse, Headers $headers)
+    /**
+     * CurlResponse constructor.
+     * @param int $statusCode
+     * @param string $rawResponse
+     * @param array $headers
+     * @param array $info
+     */
+    public function __construct(int $statusCode, string $rawResponse, array $headers, array $info)
     {
         $this->statusCode = $statusCode;
         $this->rawResponse = $rawResponse;
-        $this->headers = $headers;
+        $this->headers = new Headers($headers);
+        $this->info = $info;
     }
 
     /**

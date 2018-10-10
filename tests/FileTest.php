@@ -32,7 +32,7 @@ class FileTest extends TestCase
     {
         parent::__construct();
         $this->curl = new Curl();
-        $this->curl->setSslVerifyPeer(false);
+        $this->curl->getCurlRequestFactory()->setSslVerifyPeer(false);
     }
 
     public function testPost()

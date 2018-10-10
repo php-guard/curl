@@ -35,15 +35,10 @@ class Headers implements \ArrayAccess
      * @var array
      */
     private $headers;
-    /**
-     * @var array
-     */
-    private $lowerHeaders;
 
     public function __construct(array $headers = [])
     {
-        $this->headers = $headers;
-        $this->lowerHeaders = array_change_key_case($headers, CASE_LOWER);
+        $this->headers = self::normaliseHeaders($headers);
     }
 
     /**
@@ -60,7 +55,7 @@ class Headers implements \ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return isset($this->lowerHeaders[strtolower($offset)]);
+        return isset($this->headers[self::normalizeHeaderKey($offset)]);
     }
 
     /**
@@ -74,7 +69,7 @@ class Headers implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->lowerHeaders[strtolower($offset)] ?? null;
+        return $this->headers[self::normalizeHeaderKey($offset)] ?? null;
     }
 
     /**
@@ -91,8 +86,7 @@ class Headers implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->headers[$offset] = $value;
-        $this->lowerHeaders[strtolower($offset)] = $value;
+        $this->headers[self::normalizeHeaderKey($offset)] = $value;
     }
 
     /**
@@ -106,8 +100,7 @@ class Headers implements \ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        unset($this->headers[$offset]);
-        unset($this->lowerHeaders[strtolower($offset)]);
+        unset($this->headers[self::normalizeHeaderKey($offset)]);
     }
 
     public function all()
@@ -115,9 +108,9 @@ class Headers implements \ArrayAccess
         return $this->headers;
     }
 
-    public function replace(Headers $headers)
+    public function replace(array $headers)
     {
-        return new self(array_replace($this->headers, $headers->all()));
+        return new self(array_replace($this->headers, self::normaliseHeaders($headers)));
     }
 
     public function toHttp(): array
@@ -125,5 +118,22 @@ class Headers implements \ArrayAccess
         return array_map(function ($k, $v) {
             return $k . ':' . $v;
         }, array_keys($this->headers), $this->headers);
+    }
+
+    public static function normalizeHeaderKey(string $key) {
+        return ucwords($key, '-');
+    }
+
+    public static function normaliseHeaders(array $headers) {
+        return self::array_map_assoc(function ($k, $v) {
+            return [self::normalizeHeaderKey($k) => $v];
+        }, $headers);
+    }
+
+    public static function array_map_assoc(callable $f, array $a)
+    {
+        return array_reduce(array_map($f, array_keys($a), $a), function (array $acc, array $a) {
+            return $acc + $a;
+        }, []);
     }
 }

@@ -22,71 +22,19 @@ namespace PhpGuard\Curl;
 
 class Curl
 {
-    const DEFAULT_CURL_OPTIONS = [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER => true,
-        CURLINFO_HEADER_OUT => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    ];
-
-    protected $defaultCurlOptions;
-    protected $defaultHeaders;
-    /**
-     * @var null|string
-     */
-    private $baseUrl;
-    /**
-     * @var null|string
-     */
-    private $proxy;
-    /**
-     * @var array
-     */
-    private $proxyIgnoredHosts;
     private $requestModifierPipeline;
+    private $curlResponseFactory;
+    private $curlRequestFactory;
 
-    public function __construct(?string $baseUrl = null, ?string $proxy = null, array $proxyIgnoredHosts = [])
+    public function __construct(?string $host = null)
     {
-        if ($baseUrl) {
-            $baseUrl = rtrim($baseUrl, '/');
-        }
-
-        $this->defaultHeaders = new Headers();
-        $this->defaultCurlOptions = new CurlOptions(self::DEFAULT_CURL_OPTIONS);
-        $this->baseUrl = $baseUrl;
-        $this->proxy = $proxy;
-        $this->proxyIgnoredHosts = $proxyIgnoredHosts;
         $this->requestModifierPipeline = new RequestModifierPipeline();
+        $this->curlResponseFactory = new CurlResponseFactory();
+        $this->curlRequestFactory = new CurlRequestFactory($this, $host);
 
         $this->requestModifierPipeline
             ->pipe(new FileRequestModifier())
             ->pipe(new PlainTextRequestModifier());
-    }
-
-    /**
-     * If set to false, ignore error "SSL certificate problem: unable to get local issuer certificate"
-     * Default to true
-     * @param bool $value
-     */
-    public function setSslVerifyPeer(bool $value)
-    {
-        $this->defaultCurlOptions[CURLOPT_SSL_VERIFYPEER] = $value;
-    }
-
-    public function getDefaultCurlOptions(): CurlOptions
-    {
-        return $this->defaultCurlOptions;
-    }
-
-    /**
-     * @return Headers
-     */
-    public function getDefaultHeaders(): Headers
-    {
-        return $this->defaultHeaders;
     }
 
     /**
@@ -97,58 +45,34 @@ class Curl
      */
     public function get(string $url, $query = null, array $headers = [])
     {
-        if (!empty($query)) {
-            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
-        }
-
-        if ($this->baseUrl && is_null(parse_url($url, PHP_URL_HOST))) {
-            $url = $this->baseUrl . $url;
-        }
-
-        return new CurlRequest($this, $url, 'GET', null, $headers);
+        return $this->curlRequestFactory->create('GET', $url, null, $query, $headers);
     }
 
     public function post(string $url, $data = null, $query = null, array $headers = [])
     {
-        if (!empty($query)) {
-            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
-        }
-
-        return new CurlRequest($this, $url, 'POST', $data, $headers);
+        return $this->curlRequestFactory->create('POST', $url, $data, $query, $headers);
     }
 
     public function put(string $url, $data = null, $query = null, array $headers = [])
     {
-        if (!empty($query)) {
-            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
-        }
-
-        return new CurlRequest($this, $url, 'PUT', $data, $headers);
+        return $this->curlRequestFactory->create('PUT', $url, $data, $query, $headers);
     }
 
     public function patch(string $url, $data = null, $query = null, array $headers = [])
     {
-        if (!empty($query)) {
-            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
-        }
-
-        return new CurlRequest($this, $url, 'PATCH', $data, $headers);
+        return $this->curlRequestFactory->create('PATCH', $url, $data, $query, $headers);
     }
 
     public function delete(string $url, $data = null, $query = null, array $headers = [])
     {
-        if (!empty($query)) {
-            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
-        }
-
-        return new CurlRequest($this, $url, 'DELETE', $data, $headers);
+        return $this->curlRequestFactory->create('DELETE', $url, $data, $query, $headers);
     }
 
     /**
      * @param CurlRequest $request
      * @return resource
      */
-    public function prepare(CurlRequest $request)
+    protected function prepare(CurlRequest $request)
     {
         $request = $this->requestModifierPipeline->process($request);
 
@@ -158,16 +82,11 @@ class Curl
         curl_setopt($ch, CURLOPT_URL, $request->getUrl());
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->getMethod());
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getHeaders()->toHttp());
 
-        $curlOptions = $this->defaultCurlOptions->replace($request->getCurlOptions());
-
-        foreach ($curlOptions->all() as $key => $value) {
+        foreach ($request->getCurlOptions()->all() as $key => $value) {
             curl_setopt($ch, $key, $value);
         }
-
-        $headers = $this->defaultHeaders->replace($request->getHeaders());
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers->toHttp());
 
         return $ch;
     }
@@ -193,23 +112,10 @@ class Curl
             throw new CurlError($message, $code);
         }
 
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $rawHeaders = substr($output, 0, $headerSize);
-        $raw = substr($output, $headerSize);
-
-        $headers = array_reduce(explode("\n", $rawHeaders), function ($headers, $header) {
-            $parts = explode(':', $header);
-            if (count($parts) == 2) {
-                $headers[trim($parts[0])] = trim($parts[1]);
-            }
-            return $headers;
-        }, []);
-
-        // close curl resource to free up system resources
+        $info = curl_getinfo($ch);
         curl_close($ch);
 
-        return new CurlResponse($statusCode, $raw, new Headers($headers));
+        return $this->curlResponseFactory->create($output, $info);
     }
 
     /**
@@ -227,6 +133,22 @@ class Curl
     public function getRequestModifierPipeline(): RequestModifierPipeline
     {
         return $this->requestModifierPipeline;
+    }
+
+    /**
+     * @return CurlRequestFactory
+     */
+    public function getCurlRequestFactory(): CurlRequestFactory
+    {
+        return $this->curlRequestFactory;
+    }
+
+    /**
+     * @return CurlResponseFactory
+     */
+    public function getCurlResponseFactory(): CurlResponseFactory
+    {
+        return $this->curlResponseFactory;
     }
 
 }

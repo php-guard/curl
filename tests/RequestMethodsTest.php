@@ -33,8 +33,10 @@ class RequestMethodsTest extends TestCase
     {
         parent::__construct();
         $this->curl = new Curl();
-        $this->curl->setSslVerifyPeer(false);
-        $this->curl->getRequestModifierPipeline()//            ->pipe(new ProxyRequestModifier('X'))
+        $this->curl->getCurlRequestFactory()
+            ->setSslVerifyPeer(false);
+        $this->curl->getRequestModifierPipeline()
+            //->pipe(new ProxyRequestModifier('X'))
         ;
     }
 
