@@ -1,0 +1,22 @@
+checks:
+  php: true
+
+build:
+  environment:
+    php: 7.2.0
+  tests:
+    override:
+    -
+      command: 'vendor/bin/phpunit --coverage-clover=clover'
+      coverage:
+        file: 'clover'
+        format: 'clover'
+  nodes:
+    analysis:
+      project_setup:
+        override: true
+      tests:
+        override: [php-scrutinizer-run]
+
+filter:
+  paths: ["src/*"]
