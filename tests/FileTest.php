@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class FileTest extends TestCase
     public function testPost()
     {
         try {
-            $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'LICENSE';
+            $file = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'LICENSE';
             $content = base64_encode(file_get_contents($file));
             $name = basename($file);
 
@@ -63,7 +63,7 @@ class FileTest extends TestCase
     public function testPostCurl()
     {
         try {
-            $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'LICENSE';
+            $file = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'LICENSE';
             $content = base64_encode(file_get_contents($file));
             $name = basename($file);
             $mimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
@@ -92,7 +92,7 @@ class FileTest extends TestCase
     public function testPut()
     {
         try {
-            $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'LICENSE';
+            $file = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'LICENSE';
             $content = base64_encode(file_get_contents($file));
             $name = basename($file);
 

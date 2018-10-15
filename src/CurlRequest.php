@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,12 +49,12 @@ class CurlRequest
     /**
      * CurlRequest constructor.
      *
-     * @param Curl $curl
-     * @param string $url
-     * @param string $method
+     * @param Curl       $curl
+     * @param string     $url
+     * @param string     $method
      * @param array|null $data
-     * @param array $headers
-     * @param array $curlOptions
+     * @param array      $headers
+     * @param array      $curlOptions
      */
     public function __construct(Curl $curl, string $url, string $method = 'GET', $data = null, array $headers = [],
                                 array $curlOptions = [])

@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,10 @@ class CurlResponse
     /**
      * CurlResponse constructor.
      *
-     * @param int $statusCode
+     * @param int    $statusCode
      * @param string $rawResponse
-     * @param array $headers
-     * @param array $info
+     * @param array  $headers
+     * @param array  $info
      */
     public function __construct(int $statusCode, string $rawResponse, array $headers, array $info)
     {

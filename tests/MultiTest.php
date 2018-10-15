@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,10 +47,10 @@ class MultiTest extends TestCase
             ]);
 
             foreach ($responses as $response) {
-                $this->assertFalse($response->isError(), $response->statusCode() . ' ' . $response->raw());
+                $this->assertFalse($response->isError(), $response->statusCode().' '.$response->raw());
             }
         } catch (CurlError $e) {
-            $this->fail('(' . $e->getCode() . ') ' . $e->getMessage());
+            $this->fail('('.$e->getCode().') '.$e->getMessage());
         }
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ class Curl
 
     /**
      * @param CurlRequest[] $requests
-     * @param array $options Définit les options pour le gestionnaire multiple cURL
+     * @param array         $options  Définit les options pour le gestionnaire multiple cURL
      *
      * @return CurlResponse[]
      *
@@ -122,9 +122,9 @@ class Curl
     }
 
     /**
-     * @param string $url
+     * @param string            $url
      * @param null|array|string $query
-     * @param array $headers
+     * @param array             $headers
      *
      * @return CurlRequest
      */

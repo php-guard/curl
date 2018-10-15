@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,11 +57,11 @@ class CurlRequestFactory
     public function create(string $method, string $url, $data = null, $query = null, array $headers = [])
     {
         if ($this->host && is_null(parse_url($url, PHP_URL_HOST))) {
-            $url = $this->host . $url;
+            $url = $this->host.$url;
         }
 
         if (!empty($query)) {
-            $url .= '?' . (is_string($query) ? $query : http_build_query($query, '', '&'));
+            $url .= '?'.(is_string($query) ? $query : http_build_query($query, '', '&'));
         }
 
         $headers = $this->defaultHeaders->replace($headers)->all();

@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,11 +78,9 @@ class CurlOptions implements \ArrayAccess
      * @param mixed $offset <p>
      *                      The offset to assign the value to.
      *                      </p>
-     * @param mixed $value <p>
+     * @param mixed $value  <p>
      *                      The value to set.
      *                      </p>
-     *
-     * @return void
      *
      * @since 5.0.0
      */
@@ -99,8 +97,6 @@ class CurlOptions implements \ArrayAccess
      * @param mixed $offset <p>
      *                      The offset to unset.
      *                      </p>
-     *
-     * @return void
      *
      * @since 5.0.0
      */
