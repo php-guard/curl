@@ -19,14 +19,13 @@
 
 namespace PhpGuard\Curl;
 
-
 class PlainTextRequestModifier implements RequestModifierInterface
 {
-
     /**
-     * Modify a request
+     * Modify a request.
      *
      * @param CurlRequest $request
+     *
      * @return CurlRequest
      */
     public function modify(CurlRequest $request): CurlRequest

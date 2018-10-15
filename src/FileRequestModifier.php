@@ -19,14 +19,13 @@
 
 namespace PhpGuard\Curl;
 
-
 class FileRequestModifier implements RequestModifierInterface
 {
-
     /**
-     * Modify a request
+     * Modify a request.
      *
      * @param CurlRequest $request
+     *
      * @return CurlRequest
      */
     public function modify(CurlRequest $request): CurlRequest
@@ -38,12 +37,12 @@ class FileRequestModifier implements RequestModifierInterface
             if (!preg_match(Headers::CONTENT_TYPE_PATTERN_JSON, $headers[Headers::CONTENT_TYPE])) {
                 $hasFile = false;
                 foreach ($data as $key => $value) {
-                    if (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
+                    if (is_string($value) && 0 === strpos($value, '@') && is_file(substr($value, 1))) {
                         $hasFile = true;
                         if (class_exists('CURLFile')) {
                             $data[$key] = new \CURLFile(substr($value, 1));
                         }
-                    } else if ($value instanceof \CURLFile) {
+                    } elseif ($value instanceof \CURLFile) {
                         $hasFile = true;
                     }
                 }

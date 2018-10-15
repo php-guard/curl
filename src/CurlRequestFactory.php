@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) 2018 by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
+ * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,13 @@
 
 namespace PhpGuard\Curl;
 
-
 class CurlRequestFactory
 {
     const DEFAULT_CURL_OPTIONS = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => true,
         CURLINFO_HEADER_OUT => true,
-        CURLOPT_ENCODING => "",
+        CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 30,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -55,7 +54,8 @@ class CurlRequestFactory
         $this->curl = $curl;
     }
 
-    public function create(string $method, string $url, $data = null, $query = null, array $headers = []) {
+    public function create(string $method, string $url, $data = null, $query = null, array $headers = [])
+    {
         if ($this->host && is_null(parse_url($url, PHP_URL_HOST))) {
             $url = $this->host . $url;
         }
@@ -65,13 +65,16 @@ class CurlRequestFactory
         }
 
         $headers = $this->defaultHeaders->replace($headers)->all();
+
         return new CurlRequest($this->curl, $url, $method, $data, $headers, $this->defaultCurlOptions->all());
     }
 
     /**
      * If set to false, ignore error "SSL certificate problem: unable to get local issuer certificate"
-     * Default to true
+     * Default to true.
+     *
      * @param bool $value
+     *
      * @return CurlRequestFactory
      */
     public function setSslVerifyPeer(bool $value): self
@@ -104,11 +107,12 @@ class CurlRequestFactory
 
     /**
      * @param null|string $host
+     *
      * @return CurlRequestFactory
      */
     public function setHost(?string $host): self
     {
-        if($host) {
+        if ($host) {
             $host = rtrim($host, '/');
         }
 

@@ -19,13 +19,13 @@
 
 namespace PhpGuard\Curl;
 
-
 interface RequestModifierInterface
 {
     /**
-     * Modify a request
+     * Modify a request.
      *
      * @param CurlRequest $request
+     *
      * @return CurlRequest
      */
     public function modify(CurlRequest $request): CurlRequest;

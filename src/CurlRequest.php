@@ -19,7 +19,6 @@
 
 namespace PhpGuard\Curl;
 
-
 class CurlRequest
 {
     /**
@@ -49,6 +48,7 @@ class CurlRequest
 
     /**
      * CurlRequest constructor.
+     *
      * @param Curl $curl
      * @param string $url
      * @param string $method
@@ -138,7 +138,9 @@ class CurlRequest
 
     /**
      * @param bool $throwExceptionOnHttpError
+     *
      * @return CurlResponse
+     *
      * @throws CurlError
      */
     public function execute(bool $throwExceptionOnHttpError = false): CurlResponse
@@ -151,5 +153,4 @@ class CurlRequest
 
         return $response;
     }
-
 }

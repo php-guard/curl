@@ -19,7 +19,6 @@
 
 namespace PhpGuard\Curl;
 
-
 class Headers implements \ArrayAccess
 {
     const CONTENT_TYPE_TEXT_PLAIN = 'text/plain';
@@ -42,15 +41,19 @@ class Headers implements \ArrayAccess
     }
 
     /**
-     * Whether a offset exists
-     * @link https://php.net/manual/en/arrayaccess.offsetexists.php
+     * Whether a offset exists.
+     *
+     * @see https://php.net/manual/en/arrayaccess.offsetexists.php
+     *
      * @param mixed $offset <p>
-     * An offset to check for.
-     * </p>
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
+     *                      An offset to check for.
+     *                      </p>
+     *
+     * @return bool true on success or false on failure.
+     *              </p>
+     *              <p>
+     *              The return value will be casted to boolean if non-boolean was returned
+     *
      * @since 5.0.0
      */
     public function offsetExists($offset)
@@ -59,12 +62,16 @@ class Headers implements \ArrayAccess
     }
 
     /**
-     * Offset to retrieve
-     * @link https://php.net/manual/en/arrayaccess.offsetget.php
+     * Offset to retrieve.
+     *
+     * @see https://php.net/manual/en/arrayaccess.offsetget.php
+     *
      * @param mixed $offset <p>
-     * The offset to retrieve.
-     * </p>
-     * @return mixed Can return all value types.
+     *                      The offset to retrieve.
+     *                      </p>
+     *
+     * @return mixed can return all value types
+     *
      * @since 5.0.0
      */
     public function offsetGet($offset)
@@ -73,15 +80,19 @@ class Headers implements \ArrayAccess
     }
 
     /**
-     * Offset to set
-     * @link https://php.net/manual/en/arrayaccess.offsetset.php
+     * Offset to set.
+     *
+     * @see https://php.net/manual/en/arrayaccess.offsetset.php
+     *
      * @param mixed $offset <p>
-     * The offset to assign the value to.
-     * </p>
+     *                      The offset to assign the value to.
+     *                      </p>
      * @param mixed $value <p>
-     * The value to set.
-     * </p>
+     *                      The value to set.
+     *                      </p>
+     *
      * @return void
+     *
      * @since 5.0.0
      */
     public function offsetSet($offset, $value)
@@ -90,12 +101,16 @@ class Headers implements \ArrayAccess
     }
 
     /**
-     * Offset to unset
-     * @link https://php.net/manual/en/arrayaccess.offsetunset.php
+     * Offset to unset.
+     *
+     * @see https://php.net/manual/en/arrayaccess.offsetunset.php
+     *
      * @param mixed $offset <p>
-     * The offset to unset.
-     * </p>
+     *                      The offset to unset.
+     *                      </p>
+     *
      * @return void
+     *
      * @since 5.0.0
      */
     public function offsetUnset($offset)
@@ -120,11 +135,13 @@ class Headers implements \ArrayAccess
         }, array_keys($this->headers), $this->headers);
     }
 
-    public static function normalizeHeaderKey(string $key) {
+    public static function normalizeHeaderKey(string $key)
+    {
         return ucwords($key, '-');
     }
 
-    public static function normaliseHeaders(array $headers) {
+    public static function normaliseHeaders(array $headers)
+    {
         return self::array_map_assoc(function ($k, $v) {
             return [self::normalizeHeaderKey($k) => $v];
         }, $headers);

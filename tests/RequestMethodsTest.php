@@ -19,7 +19,6 @@
 
 namespace PhpGuard\Curl\Tests;
 
-
 use PhpGuard\Curl\Curl;
 use PhpGuard\Curl\CurlError;
 use PHPUnit\Framework\TestCase;
@@ -85,7 +84,8 @@ class RequestMethodsTest extends TestCase
         }
     }
 
-    public function testPut() {
+    public function testPut()
+    {
         try {
             $data = 'This is expected to be sent back as part of response body.';
             $response = $this->curl->put('https://postman-echo.com/put', $data)->execute();
@@ -100,7 +100,8 @@ class RequestMethodsTest extends TestCase
         }
     }
 
-    public function testPatch() {
+    public function testPatch()
+    {
         try {
             $data = 'This is expected to be sent back as part of response body.';
             $response = $this->curl->patch('https://postman-echo.com/patch', $data)->execute();
@@ -114,7 +115,8 @@ class RequestMethodsTest extends TestCase
         }
     }
 
-    public function testDelete() {
+    public function testDelete()
+    {
         try {
             $data = 'This is expected to be sent back as part of response body.';
             $response = $this->curl->delete('https://postman-echo.com/delete', $data)->execute();

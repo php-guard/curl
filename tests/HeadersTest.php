@@ -19,7 +19,6 @@
 
 namespace PhpGuard\Curl\Tests;
 
-
 use PhpGuard\Curl\Curl;
 use PhpGuard\Curl\CurlError;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +40,7 @@ class HeadersTest extends TestCase
         try {
             $data = 'Lorem ipsum dolor sit amet';
             $response = $this->curl->get('https://postman-echo.com/headers', null, [
-                'my-sample-header' => $data
+                'my-sample-header' => $data,
             ])->execute();
 
             $this->assertEquals(200, $response->statusCode());
@@ -60,7 +59,7 @@ class HeadersTest extends TestCase
         try {
             $data = [
                 'Content-Type' => 'text/html',
-                'test' => 'response_headers'
+                'test' => 'response_headers',
             ];
             $response = $this->curl->get('https://postman-echo.com/response-headers', $data)->execute();
 
@@ -72,10 +71,11 @@ class HeadersTest extends TestCase
         }
     }
 
-    public function testBasicAuth() {
+    public function testBasicAuth()
+    {
         try {
             $response = $this->curl->get('https://postman-echo.com/basic-auth', null, [
-                'Authorization' => 'Basic cG9zdG1hbjpwYXNzd29yZA=='
+                'Authorization' => 'Basic cG9zdG1hbjpwYXNzd29yZA==',
             ])->execute();
 
             $this->assertEquals(200, $response->statusCode());

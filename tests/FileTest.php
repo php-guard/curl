@@ -19,7 +19,6 @@
 
 namespace PhpGuard\Curl\Tests;
 
-
 use PhpGuard\Curl\Curl;
 use PhpGuard\Curl\CurlError;
 use PHPUnit\Framework\TestCase;
@@ -38,13 +37,13 @@ class FileTest extends TestCase
     public function testPost()
     {
         try {
-            $file = __DIR__ . DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'LICENSE';
+            $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'LICENSE';
             $content = base64_encode(file_get_contents($file));
             $name = basename($file);
 
             $response = $this->curl->post('https://postman-echo.com/post', [
                 'file' => '@'.$file,
-                'name' => $name
+                'name' => $name,
             ])->execute();
 
             $this->assertEquals(200, $response->statusCode());
@@ -64,7 +63,7 @@ class FileTest extends TestCase
     public function testPostCurl()
     {
         try {
-            $file = __DIR__ . DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'LICENSE';
+            $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'LICENSE';
             $content = base64_encode(file_get_contents($file));
             $name = basename($file);
             $mimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
@@ -73,7 +72,7 @@ class FileTest extends TestCase
 
             $response = $this->curl->post('https://postman-echo.com/post', [
                 'file' => $data,
-                'name' => $name
+                'name' => $name,
             ])->execute();
 
             $this->assertEquals(200, $response->statusCode());
@@ -93,13 +92,13 @@ class FileTest extends TestCase
     public function testPut()
     {
         try {
-            $file = __DIR__ . DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'LICENSE';
+            $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'LICENSE';
             $content = base64_encode(file_get_contents($file));
             $name = basename($file);
 
             $response = $this->curl->post('https://postman-echo.com/post', [
                 'file' => '@'.$file,
-                'name' => $name
+                'name' => $name,
             ])->execute();
 
             $this->assertEquals(200, $response->statusCode());

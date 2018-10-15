@@ -19,7 +19,6 @@
 
 namespace PhpGuard\Curl;
 
-
 class ProxyRequestModifier implements RequestModifierInterface
 {
     /**
@@ -43,10 +42,12 @@ class ProxyRequestModifier implements RequestModifierInterface
     }
 
     /**
-     * Handles a request and produces a response
+     * Handles a request and produces a response.
      *
      * May call other collaborating code to generate the response.
+     *
      * @param CurlRequest $request
+     *
      * @return CurlRequest
      */
     public function modify(CurlRequest $request): CurlRequest
