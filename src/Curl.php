@@ -19,6 +19,9 @@
 
 namespace PhpGuard\Curl;
 
+use PhpGuard\Curl\RequestModifier\FileRequestModifier;
+use PhpGuard\Curl\RequestModifier\PlainTextRequestModifier;
+
 class Curl
 {
     private $requestModifierPipeline;
@@ -34,91 +37,6 @@ class Curl
         $this->requestModifierPipeline
             ->pipe(new FileRequestModifier())
             ->pipe(new PlainTextRequestModifier());
-    }
-
-    /**
-     * @param CurlRequest[] $requests
-     * @param array         $options  Définit les options pour le gestionnaire multiple cURL
-     *
-     * @return CurlResponse[]
-     *
-     * @throws CurlError
-     */
-    public function multi(array $requests, array $options = [])
-    {
-        $mh = curl_multi_init();
-
-        foreach ($options as $key => $value) {
-            curl_multi_setopt($mh, $key, $value);
-        }
-
-        $chs = [];
-        foreach ($requests as $request) {
-            $ch = $this->prepare($request);
-            $chs[] = $ch;
-            curl_multi_add_handle($mh, $ch);
-        }
-
-        $active = null;
-
-        do {
-            $code = curl_multi_exec($mh, $active);
-            curl_multi_select($mh);
-        } while ($active > 0);
-
-        $responses = [];
-
-        try {
-            if ($code > CURLM_OK) {
-                throw new CurlError(curl_multi_strerror($code), $code);
-            }
-
-            foreach ($chs as $ch) {
-                $output = curl_multi_getcontent($ch);
-
-                if (false === $output) {
-                    $message = curl_error($ch);
-                    $code = curl_errno($ch);
-
-                    throw new CurlError($message, $code);
-                }
-
-                $responses[] = $this->curlResponseFactory->create($output, curl_getinfo($ch));
-            }
-        } catch (CurlError $curlError) {
-            throw $curlError;
-        } finally {
-            foreach ($chs as $ch) {
-                curl_multi_remove_handle($mh, $ch);
-            }
-            curl_multi_close($mh);
-        }
-
-        return $responses;
-    }
-
-    /**
-     * @param CurlRequest $request
-     *
-     * @return resource
-     */
-    protected function prepare(CurlRequest $request)
-    {
-        $request = $this->requestModifierPipeline->process($request);
-
-        // create curl resource
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $request->getUrl());
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->getMethod());
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getHeaders()->toHttp());
-
-        foreach ($request->getCurlOptions()->all() as $key => $value) {
-            curl_setopt($ch, $key, $value);
-        }
-
-        return $ch;
     }
 
     /**
@@ -154,6 +72,55 @@ class Curl
     }
 
     /**
+     * @param CurlRequest[] $requests
+     * @param array         $options  Définit les options pour le gestionnaire multiple cURL
+     *
+     * @return CurlResponse[]
+     *
+     * @throws CurlError
+     */
+    public function multi(array $requests, array $options = [])
+    {
+        $mh = curl_multi_init();
+
+        foreach ($options as $key => $value) {
+            curl_multi_setopt($mh, $key, $value);
+        }
+
+        $chs = [];
+        foreach ($requests as $request) {
+            $ch = $this->prepare($request);
+            $chs[] = $ch;
+            curl_multi_add_handle($mh, $ch);
+        }
+
+        $active = null;
+
+        do {
+            $code = curl_multi_exec($mh, $active);
+            curl_multi_select($mh);
+        } while ($active > 0);
+
+        try {
+            if ($code > CURLM_OK) {
+                throw new CurlError(curl_multi_strerror($code), $code);
+            }
+
+            $responses = [];
+            foreach ($chs as $ch) {
+                $responses[] = $this->curlResponseFactory->create($ch, curl_multi_getcontent($ch));
+            }
+
+            return $responses;
+        } finally {
+            foreach ($chs as $ch) {
+                curl_multi_remove_handle($mh, $ch);
+            }
+            curl_multi_close($mh);
+        }
+    }
+
+    /**
      * @param CurlRequest $request
      *
      * @return CurlResponse
@@ -164,22 +131,35 @@ class Curl
     {
         $ch = $this->prepare($request);
 
-        // $output contains the output string
-        $output = curl_exec($ch);
-
-        if (false === $output) {
-            $message = curl_error($ch);
-            $code = curl_errno($ch);
-
-            // close curl resource to free up system resources
+        try {
+            return $this->curlResponseFactory->create($ch, curl_exec($ch));
+        } finally {
             curl_close($ch);
-            throw new CurlError($message, $code);
+        }
+    }
+
+    /**
+     * @param CurlRequest $request
+     *
+     * @return resource
+     */
+    protected function prepare(CurlRequest $request)
+    {
+        $request = $this->requestModifierPipeline->process($request);
+
+        // create curl resource
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $request->getUrl());
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->getMethod());
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getHeaders()->toHttp());
+
+        foreach ($request->getCurlOptions()->all() as $key => $value) {
+            curl_setopt($ch, $key, $value);
         }
 
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-
-        return $this->curlResponseFactory->create($output, $info);
+        return $ch;
     }
 
     /**

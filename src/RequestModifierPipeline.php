@@ -19,6 +19,8 @@
 
 namespace PhpGuard\Curl;
 
+use PhpGuard\Curl\RequestModifier\RequestModifierInterface;
+
 class RequestModifierPipeline
 {
     /**

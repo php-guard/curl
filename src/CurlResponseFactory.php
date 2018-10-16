@@ -21,12 +21,29 @@ namespace PhpGuard\Curl;
 
 class CurlResponseFactory
 {
-    public function create($result, array $info)
+    /**
+     * @param $ch
+     * @param $content
+     *
+     * @return CurlResponse
+     *
+     * @throws CurlError
+     */
+    public function create($ch, $content)
     {
+        if (false === $content) {
+            $message = curl_error($ch);
+            $code = curl_errno($ch);
+
+            throw new CurlError($message, $code);
+        }
+
+        $info = curl_getinfo($ch);
+
         $statusCode = $info['http_code'];
         $headerSize = $info['header_size'];
-        $rawHeaders = substr($result, 0, $headerSize);
-        $raw = substr($result, $headerSize);
+        $rawHeaders = substr($content, 0, $headerSize);
+        $raw = substr($content, $headerSize);
 
         $headers = array_reduce(explode("\n", $rawHeaders), function ($headers, $header) {
             $parts = explode(':', $header);

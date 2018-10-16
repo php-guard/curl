@@ -19,6 +19,8 @@
 
 namespace PhpGuard\Curl;
 
+use PhpGuard\Curl\Collection\Headers;
+
 class CurlResponse
 {
     const JSON_PATTERN = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';

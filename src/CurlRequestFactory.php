@@ -19,6 +19,9 @@
 
 namespace PhpGuard\Curl;
 
+use PhpGuard\Curl\Collection\CurlOptions;
+use PhpGuard\Curl\Collection\Headers;
+
 class CurlRequestFactory
 {
     const DEFAULT_CURL_OPTIONS = [

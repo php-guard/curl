@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
+ * Copyright (C) 2018 by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace PhpGuard\Curl;
+namespace PhpGuard\Curl\RequestModifier;
 
-interface RequestModifierInterface
+use PhpGuard\Curl\Collection\Headers;
+use PhpGuard\Curl\CurlRequest;
+
+class PlainTextRequestModifier implements RequestModifierInterface
 {
     /**
      * Modify a request.
@@ -28,5 +31,13 @@ interface RequestModifierInterface
      *
      * @return CurlRequest
      */
-    public function modify(CurlRequest $request): CurlRequest;
+    public function modify(CurlRequest $request): CurlRequest
+    {
+        $headers = $request->getHeaders();
+        if (is_string($request->getData()) && !isset($headers[Headers::CONTENT_TYPE])) {
+            $headers[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_TEXT_PLAIN;
+        }
+
+        return $request;
+    }
 }

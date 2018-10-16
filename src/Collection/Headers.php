@@ -1,7 +1,7 @@
 <?php
 /**
  * php-guard/curl <https://github.com/php-guard/curl>
- * Copyright (C) ${YEAR} by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
+ * Copyright (C) 2018 by Alexandre Le Borgne <alexandre.leborgne.83@gmail.com>.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace PhpGuard\Curl;
+namespace PhpGuard\Curl\Collection;
 
-class CurlOptions implements \ArrayAccess
+class Headers implements \ArrayAccess
 {
+    const CONTENT_TYPE_TEXT_PLAIN = 'text/plain';
+    const CONTENT_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data';
+    const CONTENT_TYPE_FORM_URL_ENCODED = 'application/x-www-form-urlencoded';
+    const CONTENT_TYPE_FORM_JSON = 'application/json';
+
+    const CONTENT_TYPE_PATTERN_JSON = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
+
+    const CONTENT_TYPE = 'Content-Type';
+
     /**
      * @var array
      */
-    private $options;
+    private $headers;
 
-    public function __construct(array $options = [])
+    public function __construct(array $headers = [])
     {
-        $this->options = $options;
+        $this->headers = self::normaliseHeaders($headers);
     }
 
     /**
@@ -49,7 +58,7 @@ class CurlOptions implements \ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return isset($this->options[$offset]);
+        return isset($this->headers[self::normalizeHeaderKey($offset)]);
     }
 
     /**
@@ -67,7 +76,7 @@ class CurlOptions implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->options[$offset] ?? null;
+        return $this->headers[self::normalizeHeaderKey($offset)] ?? null;
     }
 
     /**
@@ -86,7 +95,7 @@ class CurlOptions implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->options[$offset] = $value;
+        $this->headers[self::normalizeHeaderKey($offset)] = $value;
     }
 
     /**
@@ -102,16 +111,42 @@ class CurlOptions implements \ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        unset($this->options[$offset]);
-    }
-
-    public function replace(CurlOptions $options)
-    {
-        return new self(array_replace($this->options, $options->all()));
+        unset($this->headers[self::normalizeHeaderKey($offset)]);
     }
 
     public function all()
     {
-        return $this->options;
+        return $this->headers;
+    }
+
+    public function replace(array $headers)
+    {
+        return new self(array_replace($this->headers, self::normaliseHeaders($headers)));
+    }
+
+    public function toHttp(): array
+    {
+        return array_map(function ($k, $v) {
+            return $k.':'.$v;
+        }, array_keys($this->headers), $this->headers);
+    }
+
+    public static function normalizeHeaderKey(string $key)
+    {
+        return ucwords($key, '-');
+    }
+
+    public static function normaliseHeaders(array $headers)
+    {
+        return self::array_map_assoc(function ($k, $v) {
+            return [self::normalizeHeaderKey($k) => $v];
+        }, $headers);
+    }
+
+    public static function array_map_assoc(callable $f, array $a)
+    {
+        return array_reduce(array_map($f, array_keys($a), $a), function (array $acc, array $a) {
+            return $acc + $a;
+        }, []);
     }
 }
