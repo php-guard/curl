@@ -43,7 +43,7 @@ class RequestMethodsTest extends TestCase
     {
         try {
             $data = ['foo1' => 'bar1', 'foo2' => 'bar2'];
-            $response = $this->curl->get('https://postman-echo.com/get', $data)->execute();
+            $response = $this->curl->get('https://postman-echo.com/get', $data);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -58,7 +58,7 @@ class RequestMethodsTest extends TestCase
     {
         try {
             $data = 'This is expected to be sent back as part of response body.';
-            $response = $this->curl->post('https://postman-echo.com/post', $data)->execute();
+            $response = $this->curl->post('https://postman-echo.com/post', $data);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -73,7 +73,7 @@ class RequestMethodsTest extends TestCase
     {
         try {
             $data = ['foo1' => 'bar1', 'foo2' => 'bar2'];
-            $response = $this->curl->post('https://postman-echo.com/post', $data)->execute();
+            $response = $this->curl->post('https://postman-echo.com/post', $data);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -88,7 +88,7 @@ class RequestMethodsTest extends TestCase
     {
         try {
             $data = 'This is expected to be sent back as part of response body.';
-            $response = $this->curl->put('https://postman-echo.com/put', $data)->execute();
+            $response = $this->curl->put('https://postman-echo.com/put', $data);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -104,7 +104,7 @@ class RequestMethodsTest extends TestCase
     {
         try {
             $data = 'This is expected to be sent back as part of response body.';
-            $response = $this->curl->patch('https://postman-echo.com/patch', $data)->execute();
+            $response = $this->curl->patch('https://postman-echo.com/patch', $data);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -119,7 +119,7 @@ class RequestMethodsTest extends TestCase
     {
         try {
             $data = 'This is expected to be sent back as part of response body.';
-            $response = $this->curl->delete('https://postman-echo.com/delete', $data)->execute();
+            $response = $this->curl->delete('https://postman-echo.com/delete', $data);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();

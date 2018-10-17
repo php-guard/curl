@@ -156,4 +156,21 @@ class CurlRequest
 
         return $response;
     }
+
+    public function resource()
+    {
+        // create curl resource
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $this->getUrl());
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->getData());
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $this->getMethod());
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHeaders()->toHttp());
+
+        foreach ($this->getCurlOptions()->all() as $key => $value) {
+            curl_setopt($ch, $key, $value);
+        }
+
+        return $ch;
+    }
 }

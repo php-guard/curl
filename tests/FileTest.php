@@ -44,7 +44,7 @@ class FileTest extends TestCase
             $response = $this->curl->post('https://postman-echo.com/post', [
                 'file' => '@'.$file,
                 'name' => $name,
-            ])->execute();
+            ]);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -73,7 +73,7 @@ class FileTest extends TestCase
             $response = $this->curl->post('https://postman-echo.com/post', [
                 'file' => $data,
                 'name' => $name,
-            ])->execute();
+            ]);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -99,7 +99,7 @@ class FileTest extends TestCase
             $response = $this->curl->post('https://postman-echo.com/post', [
                 'file' => '@'.$file,
                 'name' => $name,
-            ])->execute();
+            ]);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();

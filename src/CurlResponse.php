@@ -32,7 +32,7 @@ class CurlResponse
     private $rawResponse;
 
     /**
-     * @var array
+     * @var Headers
      */
     private $headers;
 

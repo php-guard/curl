@@ -41,7 +41,7 @@ class HeadersTest extends TestCase
             $data = 'Lorem ipsum dolor sit amet';
             $response = $this->curl->get('https://postman-echo.com/headers', null, [
                 'my-sample-header' => $data,
-            ])->execute();
+            ]);
 
             $this->assertEquals(200, $response->statusCode());
             $response = $response->json();
@@ -61,7 +61,7 @@ class HeadersTest extends TestCase
                 'Content-Type' => 'text/html',
                 'test' => 'response_headers',
             ];
-            $response = $this->curl->get('https://postman-echo.com/response-headers', $data)->execute();
+            $response = $this->curl->get('https://postman-echo.com/response-headers', $data);
 
             $this->assertEquals(200, $response->statusCode());
             $this->assertFalse($response->json());
@@ -76,7 +76,7 @@ class HeadersTest extends TestCase
         try {
             $response = $this->curl->get('https://postman-echo.com/basic-auth', null, [
                 'Authorization' => 'Basic cG9zdG1hbjpwYXNzd29yZA==',
-            ])->execute();
+            ]);
 
             $this->assertEquals(200, $response->statusCode());
             $this->assertEquals(['authenticated' => true], $response->json());

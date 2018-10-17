@@ -23,7 +23,7 @@ use PhpGuard\Curl\Curl;
 use PhpGuard\Curl\CurlError;
 use PHPUnit\Framework\TestCase;
 
-class MultiTest extends TestCase
+class OptionsTest extends TestCase
 {
     private $curl;
 
@@ -34,21 +34,29 @@ class MultiTest extends TestCase
         $this->curl->getCurlRequestFactory()->setSslVerifyPeer(false);
     }
 
-    public function testMulti()
+    public function testBaseUrl()
     {
-        $array = ['foo1' => 'bar1', 'foo2' => 'bar2'];
-        $string = 'This is expected to be sent back as part of response body.';
+        try {
+            $response = $this->curl->get('https://postman-echo.com/get');
+            $this->assertEquals(200, $response->statusCode());
+        } catch (CurlError $e) {
+            $this->fail('('.$e->getCode().') '.$e->getMessage());
+        }
 
         try {
-            $responses = $this->curl->multi()
-                ->get('https://postman-echo.com/get', $array)
-                ->post('https://postman-echo.com/post', $array)
-                ->post('https://postman-echo.com/post', $string)
-                ->execute();
+            $this->curl->get('/get');
+            $this->fail('Expect exception CurlError "(3) <url> malformed"');
 
-            foreach ($responses as $response) {
-                $this->assertFalse($response->isError(), $response->statusCode().' '.$response->raw());
-            }
+            $this->expectException(CurlError::class);
+            $this->expectExceptionCode(CURLE_URL_MALFORMAT);
+        } catch (CurlError $e) {
+            $this->assertEquals(3, $e->getCode());
+        }
+
+        try {
+            $this->curl->getCurlRequestFactory()->setBaseUrl('https://postman-echo.com/');
+            $response = $this->curl->get('get');
+            $this->assertEquals(200, $response->statusCode());
         } catch (CurlError $e) {
             $this->fail('('.$e->getCode().') '.$e->getMessage());
         }

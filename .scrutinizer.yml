@@ -2,8 +2,6 @@ checks:
   php: true
 
 build:
-  environment:
-    php: 7.2.0
   tests:
     override:
     -
@@ -11,12 +9,25 @@ build:
       coverage:
         file: 'clover'
         format: 'clover'
+
+  analysis:
+    project_setup:
+      override: true
+    tests:
+      override: [php-scrutinizer-run]
+
   nodes:
-    analysis:
-      project_setup:
-        override: true
-      tests:
-        override: [php-scrutinizer-run]
+    php56:
+      environment:
+        php: 5.6
+
+    php71:
+      environment:
+        php: 7.1
+
+    php72:
+      environment:
+        php: 7.2
 
 filter:
   paths: ["src/*"]

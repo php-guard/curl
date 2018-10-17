@@ -39,7 +39,7 @@ class CurlRequestFactory
     /**
      * @var null|string
      */
-    private $host;
+    private $baseUrl;
     /**
      * @var Curl
      */
@@ -53,14 +53,18 @@ class CurlRequestFactory
 
         $this->defaultHeaders = new Headers();
         $this->defaultCurlOptions = new CurlOptions(self::DEFAULT_CURL_OPTIONS);
-        $this->host = $host;
+        $this->baseUrl = $host;
         $this->curl = $curl;
     }
 
     public function create(string $method, string $url, $data = null, $query = null, array $headers = [])
     {
-        if ($this->host && is_null(parse_url($url, PHP_URL_HOST))) {
-            $url = $this->host.$url;
+        if ($this->baseUrl && is_null(parse_url($url, PHP_URL_HOST))) {
+            if (isset($url[0]) && '/' != $url[0]) {
+                $url = '/'.$url;
+            }
+
+            $url = $this->baseUrl.$url;
         }
 
         if (!empty($query)) {
@@ -103,23 +107,23 @@ class CurlRequestFactory
     /**
      * @return null|string
      */
-    public function getHost(): ?string
+    public function getBaseUrl(): ?string
     {
-        return $this->host;
+        return $this->baseUrl;
     }
 
     /**
-     * @param null|string $host
+     * @param null|string $baseUrl
      *
      * @return CurlRequestFactory
      */
-    public function setHost(?string $host): self
+    public function setBaseUrl(?string $baseUrl): self
     {
-        if ($host) {
-            $host = rtrim($host, '/');
+        if ($baseUrl) {
+            $baseUrl = rtrim($baseUrl, '/');
         }
 
-        $this->host = $host;
+        $this->baseUrl = $baseUrl;
 
         return $this;
     }

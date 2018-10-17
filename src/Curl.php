@@ -40,84 +40,87 @@ class Curl
     }
 
     /**
-     * @param string            $url
-     * @param null|array|string $query
-     * @param array             $headers
+     * @param string $url
+     * @param null   $query
+     * @param array  $headers
      *
-     * @return CurlRequest
-     */
-    public function get(string $url, $query = null, array $headers = [])
-    {
-        return $this->curlRequestFactory->create('GET', $url, null, $query, $headers);
-    }
-
-    public function post(string $url, $data = null, $query = null, array $headers = [])
-    {
-        return $this->curlRequestFactory->create('POST', $url, $data, $query, $headers);
-    }
-
-    public function put(string $url, $data = null, $query = null, array $headers = [])
-    {
-        return $this->curlRequestFactory->create('PUT', $url, $data, $query, $headers);
-    }
-
-    public function patch(string $url, $data = null, $query = null, array $headers = [])
-    {
-        return $this->curlRequestFactory->create('PATCH', $url, $data, $query, $headers);
-    }
-
-    public function delete(string $url, $data = null, $query = null, array $headers = [])
-    {
-        return $this->curlRequestFactory->create('DELETE', $url, $data, $query, $headers);
-    }
-
-    /**
-     * @param CurlRequest[] $requests
-     * @param array         $options  Définit les options pour le gestionnaire multiple cURL
-     *
-     * @return CurlResponse[]
+     * @return CurlResponse
      *
      * @throws CurlError
      */
-    public function multi(array $requests, array $options = [])
+    public function get(string $url, $query = null, array $headers = []): CurlResponse
     {
-        $mh = curl_multi_init();
+        return $this->curlRequestFactory->create('GET', $url, null, $query, $headers)->execute();
+    }
 
-        foreach ($options as $key => $value) {
-            curl_multi_setopt($mh, $key, $value);
-        }
+    /**
+     * @param string $url
+     * @param null   $data
+     * @param null   $query
+     * @param array  $headers
+     *
+     * @return CurlResponse
+     *
+     * @throws CurlError
+     */
+    public function post(string $url, $data = null, $query = null, array $headers = [])
+    {
+        return $this->curlRequestFactory->create('POST', $url, $data, $query, $headers)->execute();
+    }
 
-        $chs = [];
-        foreach ($requests as $request) {
-            $ch = $this->prepare($request);
-            $chs[] = $ch;
-            curl_multi_add_handle($mh, $ch);
-        }
+    /**
+     * @param string $url
+     * @param null   $data
+     * @param null   $query
+     * @param array  $headers
+     *
+     * @return CurlResponse
+     *
+     * @throws CurlError
+     */
+    public function put(string $url, $data = null, $query = null, array $headers = [])
+    {
+        return $this->curlRequestFactory->create('PUT', $url, $data, $query, $headers)->execute();
+    }
 
-        $active = null;
+    /**
+     * @param string $url
+     * @param null   $data
+     * @param null   $query
+     * @param array  $headers
+     *
+     * @return CurlResponse
+     *
+     * @throws CurlError
+     */
+    public function patch(string $url, $data = null, $query = null, array $headers = [])
+    {
+        return $this->curlRequestFactory->create('PATCH', $url, $data, $query, $headers)->execute();
+    }
 
-        do {
-            $code = curl_multi_exec($mh, $active);
-            curl_multi_select($mh);
-        } while ($active > 0);
+    /**
+     * @param string $url
+     * @param null   $data
+     * @param null   $query
+     * @param array  $headers
+     *
+     * @return CurlResponse
+     *
+     * @throws CurlError
+     */
+    public function delete(string $url, $data = null, $query = null, array $headers = [])
+    {
+        return $this->curlRequestFactory->create('DELETE', $url, $data, $query, $headers)->execute();
+    }
 
-        try {
-            if ($code > CURLM_OK) {
-                throw new CurlError(curl_multi_strerror($code), $code);
-            }
-
-            $responses = [];
-            foreach ($chs as $ch) {
-                $responses[] = $this->curlResponseFactory->create($ch, curl_multi_getcontent($ch));
-            }
-
-            return $responses;
-        } finally {
-            foreach ($chs as $ch) {
-                curl_multi_remove_handle($mh, $ch);
-            }
-            curl_multi_close($mh);
-        }
+    /**
+     * @param array $options Définit les options pour le gestionnaire multiple cURL
+     *
+     * @return MultiCurl
+     */
+    public function multi(array $options = [])
+    {
+        return new MultiCurl($this, $options);
     }
 
     /**
@@ -129,37 +132,13 @@ class Curl
      */
     public function execute(CurlRequest $request): CurlResponse
     {
-        $ch = $this->prepare($request);
+        $ch = $this->requestModifierPipeline->process($request)->resource();
 
         try {
             return $this->curlResponseFactory->create($ch, curl_exec($ch));
         } finally {
             curl_close($ch);
         }
-    }
-
-    /**
-     * @param CurlRequest $request
-     *
-     * @return resource
-     */
-    protected function prepare(CurlRequest $request)
-    {
-        $request = $this->requestModifierPipeline->process($request);
-
-        // create curl resource
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $request->getUrl());
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request->getMethod());
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $request->getHeaders()->toHttp());
-
-        foreach ($request->getCurlOptions()->all() as $key => $value) {
-            curl_setopt($ch, $key, $value);
-        }
-
-        return $ch;
     }
 
     /**
