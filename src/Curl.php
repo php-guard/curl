@@ -41,7 +41,7 @@ class Curl
 
     /**
      * @param string $url
-     * @param null   $query
+     * @param mixed  $query
      * @param array  $headers
      *
      * @return CurlResponse
@@ -55,8 +55,8 @@ class Curl
 
     /**
      * @param string $url
-     * @param null   $data
-     * @param null   $query
+     * @param mixed  $data
+     * @param mixed  $query
      * @param array  $headers
      *
      * @return CurlResponse
@@ -70,8 +70,8 @@ class Curl
 
     /**
      * @param string $url
-     * @param null   $data
-     * @param null   $query
+     * @param mixed  $data
+     * @param mixed  $query
      * @param array  $headers
      *
      * @return CurlResponse
@@ -85,8 +85,8 @@ class Curl
 
     /**
      * @param string $url
-     * @param null   $data
-     * @param null   $query
+     * @param mixed  $data
+     * @param mixed  $query
      * @param array  $headers
      *
      * @return CurlResponse
@@ -100,8 +100,8 @@ class Curl
 
     /**
      * @param string $url
-     * @param null   $data
-     * @param null   $query
+     * @param mixed  $data
+     * @param mixed  $query
      * @param array  $headers
      *
      * @return CurlResponse
