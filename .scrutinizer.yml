@@ -4,17 +4,7 @@ checks:
 build:
   tests:
     override:
-    -
-      command: 'vendor/bin/phpunit --coverage-clover=clover'
-      coverage:
-        file: 'clover'
-        format: 'clover'
-
-  analysis:
-    project_setup:
-      override: true
-    tests:
-      override: [php-scrutinizer-run]
+    - php-scrutinizer-run
 
   nodes:
     php56:
