@@ -1,6 +1,6 @@
 {
   "name": "php-guard/curl",
-  "description": "PHP Curl Wrapper with multi curl support. This library is an alternative to php-curl-class/php-curl-class. It uses objects to represent Curl requests and responses that can more easily be used.",
+  "description": "PHP Curl Wrapper with multi-curl support. Easy use with CurlRequest and CurlResponse objects.",
   "type": "library",
   "license": "GPL-3.0-or-later",
   "authors": [
