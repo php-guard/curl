@@ -7,7 +7,7 @@
 
 
 This library is an alternative to "https://github.com/php-curl-class/php-curl-class". 
-It uses objects to represent Curl requests and responses that can more easily be used.
+Easy use with CurlRequest and CurlResponse objects.
 
 ### Installation
 
