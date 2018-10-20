@@ -122,7 +122,7 @@ class MultiCurl
      *
      * @throws CurlError
      */
-    public function execute()
+    public function execute(): array
     {
         $mh = curl_multi_init();
 

@@ -57,7 +57,7 @@ class CurlRequestFactory
         $this->curl = $curl;
     }
 
-    public function create(string $method, string $url, $data = null, $query = null, array $headers = [])
+    public function create(string $method, string $url, $data = null, $query = null, array $headers = []): CurlRequest
     {
         if ($this->baseUrl && is_null(parse_url($url, PHP_URL_HOST))) {
             if (isset($url[0]) && '/' != $url[0]) {

@@ -63,7 +63,7 @@ class Curl
      *
      * @throws CurlError
      */
-    public function post(string $url, $data = null, $query = null, array $headers = [])
+    public function post(string $url, $data = null, $query = null, array $headers = []): CurlResponse
     {
         return $this->curlRequestFactory->create('POST', $url, $data, $query, $headers)->execute();
     }
@@ -78,7 +78,7 @@ class Curl
      *
      * @throws CurlError
      */
-    public function put(string $url, $data = null, $query = null, array $headers = [])
+    public function put(string $url, $data = null, $query = null, array $headers = []): CurlResponse
     {
         return $this->curlRequestFactory->create('PUT', $url, $data, $query, $headers)->execute();
     }
@@ -93,7 +93,7 @@ class Curl
      *
      * @throws CurlError
      */
-    public function patch(string $url, $data = null, $query = null, array $headers = [])
+    public function patch(string $url, $data = null, $query = null, array $headers = []): CurlResponse
     {
         return $this->curlRequestFactory->create('PATCH', $url, $data, $query, $headers)->execute();
     }
@@ -108,7 +108,7 @@ class Curl
      *
      * @throws CurlError
      */
-    public function delete(string $url, $data = null, $query = null, array $headers = [])
+    public function delete(string $url, $data = null, $query = null, array $headers = []): CurlResponse
     {
         return $this->curlRequestFactory->create('DELETE', $url, $data, $query, $headers)->execute();
     }
