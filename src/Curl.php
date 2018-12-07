@@ -41,76 +41,81 @@ class Curl
 
     /**
      * @param string $url
-     * @param mixed  $query
-     * @param array  $headers
+     * @param mixed $query
+     * @param array $headers
      *
+     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
      */
-    public function get(string $url, $query = null, array $headers = []): CurlResponse
+    public function get(string $url, $query = null, array $headers = [], bool $throwExceptionOnHttpError = false): CurlResponse
     {
-        return $this->curlRequestFactory->create('GET', $url, null, $query, $headers)->execute();
+        return $this->curlRequestFactory->create('GET', $url, null, $query, $headers)->execute($throwExceptionOnHttpError);
     }
 
     /**
      * @param string $url
-     * @param mixed  $data
-     * @param mixed  $query
-     * @param array  $headers
+     * @param mixed $data
+     * @param mixed $query
+     * @param array $headers
      *
+     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
      */
-    public function post(string $url, $data = null, $query = null, array $headers = []): CurlResponse
+    public function post(string $url, $data = null, $query = null, array $headers = [], bool $throwExceptionOnHttpError = false): CurlResponse
     {
-        return $this->curlRequestFactory->create('POST', $url, $data, $query, $headers)->execute();
+        return $this->curlRequestFactory->create('POST', $url, $data, $query, $headers)->execute($throwExceptionOnHttpError);
     }
 
     /**
      * @param string $url
-     * @param mixed  $data
-     * @param mixed  $query
-     * @param array  $headers
+     * @param mixed $data
+     * @param mixed $query
+     * @param array $headers
      *
+     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
      */
-    public function put(string $url, $data = null, $query = null, array $headers = []): CurlResponse
+    public function put(string $url, $data = null, $query = null, array $headers = [], bool $throwExceptionOnHttpError = false): CurlResponse
     {
-        return $this->curlRequestFactory->create('PUT', $url, $data, $query, $headers)->execute();
+        return $this->curlRequestFactory->create('PUT', $url, $data, $query, $headers)->execute($throwExceptionOnHttpError);
     }
 
     /**
      * @param string $url
-     * @param mixed  $data
-     * @param mixed  $query
-     * @param array  $headers
+     * @param mixed $data
+     * @param mixed $query
+     * @param array $headers
      *
+     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
      */
-    public function patch(string $url, $data = null, $query = null, array $headers = []): CurlResponse
+    public function patch(string $url, $data = null, $query = null, array $headers = [], bool $throwExceptionOnHttpError = false): CurlResponse
     {
-        return $this->curlRequestFactory->create('PATCH', $url, $data, $query, $headers)->execute();
+        return $this->curlRequestFactory->create('PATCH', $url, $data, $query, $headers)->execute($throwExceptionOnHttpError);
     }
 
     /**
      * @param string $url
-     * @param mixed  $data
-     * @param mixed  $query
-     * @param array  $headers
+     * @param mixed $data
+     * @param mixed $query
+     * @param array $headers
      *
+     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
      */
-    public function delete(string $url, $data = null, $query = null, array $headers = []): CurlResponse
+    public function delete(string $url, $data = null, $query = null, array $headers = [], bool $throwExceptionOnHttpError = false): CurlResponse
     {
-        return $this->curlRequestFactory->create('DELETE', $url, $data, $query, $headers)->execute();
+        return $this->curlRequestFactory->create('DELETE', $url, $data, $query, $headers)->execute($throwExceptionOnHttpError);
     }
 
     /**
