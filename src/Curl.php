@@ -41,10 +41,10 @@ class Curl
 
     /**
      * @param string $url
-     * @param mixed $query
-     * @param array $headers
+     * @param mixed  $query
+     * @param array  $headers
+     * @param bool   $throwExceptionOnHttpError
      *
-     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
@@ -56,11 +56,11 @@ class Curl
 
     /**
      * @param string $url
-     * @param mixed $data
-     * @param mixed $query
-     * @param array $headers
+     * @param mixed  $data
+     * @param mixed  $query
+     * @param array  $headers
+     * @param bool   $throwExceptionOnHttpError
      *
-     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
@@ -72,11 +72,11 @@ class Curl
 
     /**
      * @param string $url
-     * @param mixed $data
-     * @param mixed $query
-     * @param array $headers
+     * @param mixed  $data
+     * @param mixed  $query
+     * @param array  $headers
+     * @param bool   $throwExceptionOnHttpError
      *
-     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
@@ -88,11 +88,11 @@ class Curl
 
     /**
      * @param string $url
-     * @param mixed $data
-     * @param mixed $query
-     * @param array $headers
+     * @param mixed  $data
+     * @param mixed  $query
+     * @param array  $headers
+     * @param bool   $throwExceptionOnHttpError
      *
-     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
@@ -104,11 +104,11 @@ class Curl
 
     /**
      * @param string $url
-     * @param mixed $data
-     * @param mixed $query
-     * @param array $headers
+     * @param mixed  $data
+     * @param mixed  $query
+     * @param array  $headers
+     * @param bool   $throwExceptionOnHttpError
      *
-     * @param bool $throwExceptionOnHttpError
      * @return CurlResponse
      *
      * @throws CurlError
