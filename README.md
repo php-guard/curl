@@ -145,10 +145,10 @@ Add an object to modify CURL requests
 
     pipe(RequestModifierInterface $requestModifier): self
     
-By default, FileRequestModifier et PlainTextRequestModifier are active.
+By default, FileRequestModifier and PlainTextRequestModifier are active.
 If necessary, you can add an instance of ProxyRequestModifier
 
-* ProxyRequestModifier It allows to define curl options to use a proxy
+* ProxyRequestModifier allows you to define curl options to use a proxy
 
 * FileRequestModifier is used to manage file paths starting with @ 
 and passed as a parameter by transforming them into CurlFile 
