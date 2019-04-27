@@ -19,6 +19,7 @@
 
 namespace PhpGuard\Curl\Tests;
 
+use PhpGuard\Curl\Collection\Headers;
 use PhpGuard\Curl\Curl;
 use PhpGuard\Curl\CurlError;
 use PHPUnit\Framework\TestCase;
@@ -79,6 +80,22 @@ class RequestMethodsTest extends TestCase
             $response = $response->json();
             $this->assertArrayHasKey('form', $response);
             $this->assertEquals($data, $response['form']);
+        } catch (CurlError $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    public function testPostJson()
+    {
+        try {
+            $data = ['foo1' => 'bar1', 'foo2' => ['foo22' => 'bar2']];
+            $response = $this->curl->post('https://postman-echo.com/post', $data, null, [
+                Headers::CONTENT_TYPE => Headers::CONTENT_TYPE_FORM_JSON
+            ]);
+            $this->assertEquals(200, $response->statusCode());
+            $response = $response->json();
+            $this->assertArrayHasKey('json', $response);
+            $this->assertEquals($data, $response['json']);
         } catch (CurlError $e) {
             $this->fail($e->getMessage());
         }

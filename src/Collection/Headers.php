@@ -133,7 +133,7 @@ class Headers implements \ArrayAccess
 
     public static function normalizeHeaderKey(string $key)
     {
-        return ucwords($key, '-');
+        return strtolower($key);
     }
 
     public static function normaliseHeaders(array $headers)

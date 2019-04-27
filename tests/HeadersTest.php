@@ -40,7 +40,7 @@ class HeadersTest extends TestCase
         try {
             $data = 'Lorem ipsum dolor sit amet';
             $response = $this->curl->get('https://postman-echo.com/headers', null, [
-                'my-sample-header' => $data,
+                'My-Sample-Header' => $data,
             ]);
 
             $this->assertEquals(200, $response->statusCode());

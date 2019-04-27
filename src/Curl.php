@@ -19,6 +19,7 @@
 
 namespace PhpGuard\Curl;
 
+use PhpGuard\Curl\RequestModifier\DataRequestModifier;
 use PhpGuard\Curl\RequestModifier\FileRequestModifier;
 use PhpGuard\Curl\RequestModifier\PlainTextRequestModifier;
 
@@ -36,6 +37,7 @@ class Curl
 
         $this->requestModifierPipeline
             ->pipe(new FileRequestModifier())
+            ->pipe(new DataRequestModifier())
             ->pipe(new PlainTextRequestModifier());
     }
 

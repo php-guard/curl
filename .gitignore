@@ -1,5 +1,4 @@
-/vendor/
+/vendor/*
 /.idea/
 /.php_cs.cache
 /.php_cs
-/composer.lock

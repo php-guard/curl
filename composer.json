@@ -25,7 +25,10 @@
   },
   "scripts": {
     "test": "phpunit --coverage-clover=clover",
-    "fix": "php-cs-fixer fix --verbose --config=.php_cs"
+    "fix": "php-cs-fixer fix --verbose --config=.php_cs",
+    "patch": "composer-version patch",
+    "minor": "composer-version minor",
+    "major": "composer-version major"
   },
   "require-dev": {
     "phpunit/phpunit": "^7",

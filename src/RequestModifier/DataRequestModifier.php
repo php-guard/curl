@@ -22,7 +22,7 @@ namespace PhpGuard\Curl\RequestModifier;
 use PhpGuard\Curl\Collection\Headers;
 use PhpGuard\Curl\CurlRequest;
 
-class FileRequestModifier implements RequestModifierInterface
+class DataRequestModifier implements RequestModifierInterface
 {
     /**
      * Modify a request.
@@ -35,25 +35,14 @@ class FileRequestModifier implements RequestModifierInterface
     {
         $data = $request->getData();
         $headers = $request->getHeaders();
-
-        if (is_array($data) && !preg_match(Headers::CONTENT_TYPE_PATTERN_JSON, $headers[Headers::CONTENT_TYPE])) {
-            $hasFile = false;
-            foreach ($data as $key => $value) {
-                if (is_string($value) && 0 === strpos($value, '@') && is_file(substr($value, 1))) {
-                    $hasFile = true;
-                    if (class_exists('CURLFile')) {
-                        $data[$key] = new \CURLFile(substr($value, 1));
-                    }
-                } else if ($value instanceof \CURLFile) {
-                    $hasFile = true;
-                }
+        if (is_array($data)) {
+            if (preg_match(Headers::CONTENT_TYPE_PATTERN_JSON, $headers[Headers::CONTENT_TYPE])) {
+                $request->setData(json_encode($data));
+            } else if (!isset($headers[Headers::CONTENT_TYPE])) {
+                $headers[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_FORM_URL_ENCODED;
+                $request->setData(http_build_query($data, '', '&'));
             }
-            if ($hasFile) {
-                $headers[Headers::CONTENT_TYPE] = Headers::CONTENT_TYPE_MULTIPART_FORM_DATA;
-            }
-            $request->setData($data);
         }
-
         return $request;
     }
 }
